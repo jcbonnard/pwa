@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { log } from 'util';
+import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 
 class CatImage {
   message: string;
@@ -20,32 +21,73 @@ class Button {
 })
 export class ImgCardComponent implements OnInit {
 
-  private image: CatImage = {
-    message: 'Progressive Web Cat',
-    api: 'https://cataas.com/cat/says/',
-    fontsize: 40
-  };
+  @ViewChild('scanner')  scanner: ZXingScannerComponent;
+  hasCameras = false;
+  availableDevices: MediaDeviceInfo[];
+  selectedDevice: MediaDeviceInfo;
+  hasPermission: boolean;
+  qrResultString: string = null;
 
-  public button: Button = {
-    text: 'Give me another cat',
-    color: 'primary',
-    disabled: false
-  };
+  // private image: CatImage = {
+  //   message: 'Progressive Web Cat',
+  //   api: 'https://cataas.com/cat/says/',
+  //   fontsize: 40
+  // };
 
-  public src: string;
+  // public button: Button = {
+  //   text: 'Give me another cat',
+  //   color: 'primary',
+  //   disabled: false
+  // };
+
+  // public src: string;
 
   constructor() { }
   
   ngOnInit() {
-    this.src = this.image.api + this.image.message + '?size=' + this.image.fontsize;
 
-    if (!navigator.onLine) {
-      this.button.text = 'Sorry, you\'re offline';
-      this.button.disabled = true;
-    }
+    this.scanner.camerasFound.subscribe((devices: MediaDeviceInfo[]) => {
+      this.hasCameras = true;
+
+      console.log('Devices: ', devices);
+      this.availableDevices = devices;
+
+      if (devices.length === 1) {
+        this.selectedDevice = devices[0];
+      }
+      else {
+        for (const device of devices) {
+          if (/back|rear|environment/gi.test(device.label)) {
+            this.scanner.changeDevice(device);
+            this.selectedDevice = device;
+            break;
+          }
+        }
+      }
+    });
+
+    this.scanner.camerasNotFound.subscribe((devices: MediaDeviceInfo[]) => {
+      console.error('An error has occurred when trying to enumerate your video-stream-enabled devices.');
+    });
+
+    this.scanner.permissionResponse.subscribe((answer: boolean) => {
+      this.hasPermission = answer;
+    });
+
+    // this.src = this.image.api + this.image.message + '?size=' + this.image.fontsize;
+
+    // if (!navigator.onLine) {
+    //   this.button.text = 'Sorry, you\'re offline';
+    //   this.button.disabled = true;
+    // }
+  }
+
+  handleQrCodeResult(resultString: string) {
+    console.log('Result: ', resultString);
+    this.qrResultString = resultString;
   }
   
-  public generateSrc(): void {
-    this.src = this.src.replace(/\&ts=[\w]*/gi, '') + '&ts=' + Date.now();
-  }
+  // public generateSrc(): void {
+  //   this.src = this.src.replace(/\&ts=[\w]*/gi, '') + '&ts=' + Date.now();
+  // }
 }

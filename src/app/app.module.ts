@@ -13,6 +13,8 @@ import {
 import { AppComponent } from './app.component';
 import { ImgCardComponent } from './img-card/img-card.component';
 
+// Import the package's module
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { ImgCardComponent } from './img-card/img-card.component';
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
     MatToolbarModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
+    // ZXing scanner module
+    ZXingScannerModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
