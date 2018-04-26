@@ -21,7 +21,7 @@ class Button {
 })
 export class ImgCardComponent implements OnInit {
 
-  @ViewChild('scanner')  scanner: ZXingScannerComponent;
+  @ViewChild('scanner') scanner: ZXingScannerComponent;
   hasCameras = false;
   availableDevices: MediaDeviceInfo[];
   selectedDevice: MediaDeviceInfo;
@@ -43,7 +43,7 @@ export class ImgCardComponent implements OnInit {
   // public src: string;
 
   constructor() { }
-  
+
   ngOnInit() {
 
     this.scanner.camerasFound.subscribe((devices: MediaDeviceInfo[]) => {
@@ -82,11 +82,21 @@ export class ImgCardComponent implements OnInit {
     // }
   }
 
+  displayCameras(cameras: MediaDeviceInfo[]) {
+    console.log('Devices: ', cameras);
+    this.availableDevices = cameras;
+  }
+
   handleQrCodeResult(resultString: string) {
     console.log('Result: ', resultString);
     this.qrResultString = resultString;
   }
-  
+
+  onDeviceSelectChange(selectedValue: string) {
+    console.log('Selection changed: ', selectedValue);
+    this.selectedDevice = this.scanner.getDeviceById(selectedValue);
+  }
+
   // public generateSrc(): void {
   //   this.src = this.src.replace(/\&ts=[\w]*/gi, '') + '&ts=' + Date.now();
   // }

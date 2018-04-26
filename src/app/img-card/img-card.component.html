@@ -14,6 +14,14 @@
     alt="Progressive cute cat"
     mat-card-image>
 </mat-card> -->
+
+<p *ngIf="availableDevices">
+  <label for="video-input-select">Select your camera:</label>
+  <select id="video-input-select" (change)="onDeviceSelectChange($event.target.value)">
+      <option value="" [selected]="!selectedDevice">No Device</option>
+      <option *ngFor="let device of availableDevices" [value]="device.deviceId" [selected]="selectedDevice && device.deviceId === selectedDevice.deviceId">{{ device.label }}</option>
+  </select>
+</p>
   
 <div style="text-align:center">
   <div [hidden]="!hasCameras">
